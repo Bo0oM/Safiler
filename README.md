@@ -1,9 +1,9 @@
 # How to start
 
 ## Clone files
-```
-git clone git@github.com:Bo0oM/Safiler.git
-cd Safiler
+```bash
+$ git clone git@github.com:Bo0oM/Safiler.git
+$ cd Safiler
 ```
 
 ## Run server
