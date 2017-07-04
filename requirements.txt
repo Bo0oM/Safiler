@@ -1,0 +1,2 @@
+ds_store
+mac_alias
