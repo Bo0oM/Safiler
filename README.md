@@ -2,7 +2,7 @@
 
 ## Clone files
 ```bash
-$ git clone git@github.com:Bo0oM/Safiler.git
+$ git clone https://github.com/Bo0oM/Safiler.git
 $ cd Safiler
 ```
 
@@ -12,6 +12,7 @@ $ cd Safiler
 $ [sudo] pip install -r requirements.txt
 $ python server.py
 ```
+
 ## Open PoC
 Open `PoC.xhtm` or `PoC.webarchive` in Safari.
 Copy on a USB flash drive and carry it with you :)
