@@ -19,4 +19,6 @@ Copy on a USB flash drive and carry it with you :)
 
 ### Demo
 
+Exploit PoC: https://bo0om.ru/safari_poc/
+
 ![Demo](https://raw.githubusercontent.com/Bo0oM/Safiler/master/demo.gif)
