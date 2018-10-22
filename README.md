@@ -1,6 +1,7 @@
 # Info
 
 https://lab.wallarm.com/hunting-the-files-34caa0c1496
+https://xakep.ru/2017/07/06/safari-localfile-read/
 
 # How to start
 
